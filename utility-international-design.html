@@ -158,6 +158,46 @@
     font-size: 13px; color: var(--ink-soft); display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;
   }
 
+  /* ---- Group Members ---- */
+  .members {
+    margin-top: 24px;
+    border-top: 1px solid var(--line);
+    padding-top: 18px;
+  }
+  .members-title {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: .2em;
+    text-transform: uppercase; color: var(--accent);
+    margin: 0 0 12px;
+  }
+  .members-table {
+    border-collapse: collapse;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 13.5px;
+    width: auto;
+    min-width: 360px;
+  }
+  .members-table th {
+    text-align: left;
+    padding: 6px 20px 6px 0;
+    color: var(--ink-soft);
+    font-weight: 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    font-size: 11px;
+    border-bottom: 1px solid var(--line);
+  }
+  .members-table td {
+    padding: 7px 20px 7px 0;
+    color: var(--ink);
+    border-bottom: 1px solid #e8edf0;
+    min-width: 160px;
+  }
+  .members-table td:first-child {
+    color: var(--ink-soft);
+    min-width: 28px;
+  }
+
   /* SVG shared text styling */
   svg text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
   @media (max-width: 640px) {
@@ -177,6 +217,40 @@
       <span><b>Platform:</b> Java Enterprise Edition (Java EE) / JPA</span>
       <span><b>Document type:</b> Architecture &amp; Design (UML)</span>
       <span><b>Role:</b> Project Architect</span>
+    </div>
+    <div class="members">
+      <p class="members-title">Group Members</p>
+      <table class="members-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Matric Number</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Ezehi Theddy</td>
+            <td>VUG/SEN/23/8868</td></tr>
+          <tr>
+            <td>2</td>
+            <td></td>
+            <td></td></tr>
+          <tr>
+            <td>3</td>
+            <td></td>
+            <td></td></tr>
+          <tr>
+            <td>4</td>
+            <td></td>
+            <td></td></tr>
+          <tr>
+            <td>5</td>
+            <td></td>
+            <td></td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </header>
