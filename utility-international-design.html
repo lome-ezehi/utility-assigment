@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Utility International &mdash; Architecture &amp; Design (SEN 304)</title>
+<style>
+  :root {
+    --ink: #11202b;
+    --ink-soft: #3c5563;
+    --paper: #f4f1ea;
+    --panel: #ffffff;
+    --line: #c9d6dd;
+    --accent: #0f6e8c;
+    --accent-deep: #0a4a5e;
+    --amber: #c4762a;
+    --rule: #1c3a47;
+    --shadow: 0 1px 2px rgba(17,32,43,.06), 0 8px 24px rgba(17,32,43,.06);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    line-height: 1.62;
+    font-size: 17px;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 28px 120px; }
+
+  /* ---- Masthead ---- */
+  header.masthead {
+    background:
+      linear-gradient(180deg, rgba(15,110,140,.05), transparent 60%),
+      var(--panel);
+    border-bottom: 3px solid var(--rule);
+    padding: 64px 0 40px;
+    margin-bottom: 8px;
+  }
+  .masthead .wrap { padding-bottom: 0; }
+  .eyebrow {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    letter-spacing: .32em;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-size: 46px;
+    line-height: 1.05;
+    margin: 0 0 10px;
+    letter-spacing: -.01em;
+  }
+  .subtitle { font-size: 20px; color: var(--ink-soft); margin: 0 0 26px; font-style: italic; }
+  .meta {
+    display: flex; flex-wrap: wrap; gap: 10px 26px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 13px; color: var(--ink-soft);
+    border-top: 1px solid var(--line); padding-top: 18px;
+  }
+  .meta b { color: var(--ink); font-weight: 600; }
+
+  /* ---- Table of contents ---- */
+  nav.toc {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--accent);
+    border-radius: 4px;
+    padding: 22px 26px;
+    margin: 38px 0;
+    box-shadow: var(--shadow);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+  nav.toc h2 { font-family: inherit; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); margin: 0 0 14px; }
+  nav.toc ol { margin: 0; padding-left: 20px; columns: 2; column-gap: 40px; }
+  nav.toc li { margin: 5px 0; font-size: 14.5px; }
+  nav.toc a { color: var(--ink); text-decoration: none; border-bottom: 1px solid transparent; }
+  nav.toc a:hover { border-bottom-color: var(--accent); color: var(--accent-deep); }
+
+  /* ---- Sections ---- */
+  section { margin: 54px 0; }
+  h2.sec {
+    font-size: 15px; letter-spacing: .18em; text-transform: uppercase;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: var(--accent-deep);
+    border-bottom: 2px solid var(--rule);
+    padding-bottom: 8px; margin-bottom: 8px;
+  }
+  h2.sec .num { color: var(--amber); margin-right: 12px; }
+  h3 { font-size: 23px; margin: 32px 0 6px; letter-spacing: -.01em; }
+  h4 { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; letter-spacing: .02em; margin: 24px 0 4px; color: var(--accent-deep); }
+  p { margin: 12px 0; }
+  ul, ol { margin: 12px 0; padding-left: 26px; }
+  li { margin: 7px 0; }
+  code {
+    font-family: "SF Mono", "JetBrains Mono", "Fira Code", Consolas, monospace;
+    font-size: .86em; background: #eef2f4; padding: 1px 6px; border-radius: 4px;
+    color: var(--accent-deep); border: 1px solid #dce5e9;
+  }
+  .lead { font-size: 19px; color: var(--ink-soft); }
+
+  /* ---- Figures ---- */
+  figure {
+    margin: 30px 0; background: var(--panel);
+    border: 1px solid var(--line); border-radius: 6px;
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  figure .canvas { padding: 26px 20px; overflow-x: auto; background:
+    repeating-linear-gradient(0deg, transparent, transparent 23px, rgba(15,110,140,.035) 23px, rgba(15,110,140,.035) 24px);
+  }
+  figure svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+  figcaption {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 13px; color: var(--ink-soft);
+    border-top: 1px solid var(--line); padding: 10px 18px;
+    background: #fbfaf7;
+  }
+  figcaption b { color: var(--accent-deep); }
+
+  /* ---- Callout / requirement chips ---- */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+  .chip {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px; font-weight: 600; letter-spacing: .02em;
+    background: #e7f0f3; color: var(--accent-deep);
+    border: 1px solid #c4dbe2; border-radius: 20px; padding: 5px 13px;
+  }
+  .note {
+    background: #fbf3e8; border: 1px solid #ecd6b8; border-left: 4px solid var(--amber);
+    border-radius: 4px; padding: 16px 20px; margin: 22px 0; font-size: 15.5px;
+  }
+  .note b { color: var(--amber); }
+
+  /* ---- Tables ---- */
+  table.grid {
+    width: 100%; border-collapse: collapse; margin: 22px 0;
+    font-size: 15px; background: var(--panel);
+    box-shadow: var(--shadow); border-radius: 6px; overflow: hidden;
+  }
+  table.grid th, table.grid td { text-align: left; padding: 13px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
+  table.grid th {
+    background: var(--rule); color: #eaf2f5;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600;
+  }
+  table.grid tr:last-child td { border-bottom: none; }
+  table.grid tr:nth-child(even) td { background: #fafcfc; }
+  .risk-tag { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight:700; font-size:12px; padding:3px 9px; border-radius:4px; white-space:nowrap; }
+  .sev-high { background:#f6dcd6; color:#8c2c19; }
+  .sev-med  { background:#f6ecd0; color:#7a5a12; }
+
+  footer.end {
+    margin-top: 80px; border-top: 2px solid var(--rule); padding-top: 22px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 13px; color: var(--ink-soft); display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;
+  }
+
+  /* SVG shared text styling */
+  svg text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  @media (max-width: 640px) {
+    h1 { font-size: 34px; }
+    nav.toc ol { columns: 1; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <p class="eyebrow">SEN 304 &middot; Software Architecture &amp; Design</p>
+    <h1>Utility International</h1>
+    <p class="subtitle">Architecture &amp; Design of the Self-Service Billing System under Development</p>
+    <div class="meta">
+      <span><b>Platform:</b> Java Enterprise Edition (Java EE) / JPA</span>
+      <span><b>Document type:</b> Architecture &amp; Design (UML)</span>
+      <span><b>Role:</b> Project Architect</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <nav class="toc">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#intro">Introduction &amp; Scope</a></li>
+      <li><a href="#class">Class Diagram</a></li>
+      <li><a href="#component">Component Diagram</a></li>
+      <li><a href="#deployment">Deployment Diagram</a></li>
+      <li><a href="#calc">Sequence: Calculate Bill</a></li>
+      <li><a href="#view">Sequence: View Bill</a></li>
+      <li><a href="#dispute">Sequence: Dispute Bill</a></li>
+      <li><a href="#resolve">Sequence: Resolve Disputed Bill</a></li>
+      <li><a href="#pay">Sequence: Pay Bill</a></li>
+      <li><a href="#risks">Top Technical Risks</a></li>
+      <li><a href="#assumptions">Assumptions</a></li>
+      <li><a href="#mapping">Implementation Notes</a></li>
+    </ol>
+  </nav>
+
+  <section id="intro">
+    <h2 class="sec"><span class="num">1</span>Introduction &amp; Scope</h2>
+    <p class="lead">This document presents the architecture and design for Utility International&rsquo;s self-service billing system &mdash; a turnkey Java EE solution that lets customers view, dispute and pay their electricity, gas and water bills online.</p>
+    <p>The design realises the supplied business domain model and the five use cases (Calculate Bill, View Bill, Dispute Bill, Resolve Disputed Bill, Pay Bill). It integrates with two existing external systems &mdash; the recently-installed <b>billing system</b> (accessed via web services) and the third-party <b>payment clearing house</b> (exposed as a JMS queue) &mdash; and is structured to accommodate the planned <b>push-notification</b> enhancement without rework.</p>
+    <p>The accompanying implementation is a layered JPA codebase. The persistence model deliberately uses two distinct inheritance strategies: a <code>@MappedSuperclass</code> (<code>BaseEntity</code>) to share identity and audit columns, and JPA single-table <code>@Inheritance</code> for the <code>MonthlyBill</code> &rarr; Gas/Water/Electricity hierarchy. A Data Access Object (DAO) layer encapsulates persistence, and a Data Transfer Object (DTO) layer isolates the presentation tier from the entities.</p>
+    <div class="chips">
+      <span class="chip">DTO</span><span class="chip">DAO</span><span class="chip">Optional</span>
+      <span class="chip">Functional programming</span><span class="chip">enum package</span>
+      <span class="chip">@Enumerated(EnumType.STRING)</span>
+      <span class="chip">stream().map().collect(toList())</span><span class="chip">@MappedSuperclass</span>
+    </div>
+  </section>
+
+  <section id="class">
+    <h2 class="sec"><span class="num">2</span>Class Diagram</h2>
+    <p>The class diagram models the System under Development. Public methods that are referenced by the sequence diagrams (e.g. <code>calculateBill()</code>, <code>disputeBill()</code>, <code>payBill()</code>, <code>findMostRecentOutstanding()</code>) are shown on the relevant classes. The three concrete bill types generalise to the abstract <code>MonthlyBill</code>; <code>BaseEntity</code> is a mapped superclass (UML abstract) whose members are inherited by all persistent classes.</p>
+    <figure>
+      <div class="canvas">
+        <svg viewBox="0 0 1180 1080" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="UML class diagram of the Utility International domain">
+          <defs>
+            <marker id="tri" markerWidth="20" markerHeight="16" refX="18" refY="8" orient="auto" markerUnits="userSpaceOnUse">
+              <path d="M1,1 L18,8 L1,15 Z" fill="#ffffff" stroke="#1c3a47" stroke-width="1.4"/>
+            </marker>
+            <marker id="diamond" markerWidth="22" markerHeight="14" refX="1" refY="7" orient="auto" markerUnits="userSpaceOnUse">
+              <path d="M1,7 L10,2 L20,7 L10,12 Z" fill="#1c3a47" stroke="#1c3a47"/>
+            </marker>
+            <style>
+              .cls-name { font-weight:700; font-size:14px; fill:#11202b; }
+              .cls-stereo { font-size:11px; font-style:italic; fill:#0f6e8c; }
+              .cls-mem { font-size:11.5px; fill:#3c5563; }
+              .cls-abstract { font-style:italic; }
+              .mult { font-size:11px; fill:#0a4a5e; }
+              .role { font-size:11px; fill:#3c5563; }
+              .box { fill:#ffffff; stroke:#1c3a47; stroke-width:1.4; }
+              .hdr { fill:#eaf2f5; stroke:#1c3a47; stroke-width:1.4; }
+              .assoc { stroke:#1c3a47; stroke-width:1.4; fill:none; }
+              .inherit { stroke:#1c3a47; stroke-width:1.4; fill:none; }
+            </style>
+          </defs>
+
+          <!-- ===================== BaseEntity (MappedSuperclass) ===================== -->
+          <g>
+            <rect class="hdr" x="470" y="20" width="240" height="40"/>
+            <text class="cls-stereo" x="590" y="36" text-anchor="middle">&laquo;mappedSuperclass&raquo;</text>
+            <text class="cls-name cls-abstract" x="590" y="53" text-anchor="middle">BaseEntity</text>
+            <rect class="box" x="470" y="60" width="240" height="68"/>
+            <text class="cls-mem" x="478" y="77">- id : Long</text>
+            <text class="cls-mem" x="478" y="93">- version : Integer</text>
+            <text class="cls-mem" x="478" y="109">- createdAt : LocalDateTime</text>
+            <text class="cls-mem" x="478" y="125">- updatedAt : LocalDateTime</text>
+            <rect class="box" x="470" y="128" width="240" height="20"/>
+            <text class="cls-mem" x="478" y="143">+ getId() : Long</text>
+          </g>
+
+          <!-- ===================== Customer ===================== -->
+          <g>
+            <rect class="hdr" x="40" y="250" width="250" height="24"/>
+            <text class="cls-name" x="165" y="267" text-anchor="middle">Customer</text>
+            <rect class="box" x="40" y="274" width="250" height="84"/>
+            <text class="cls-mem" x="48" y="291">- firstName : String</text>
+            <text class="cls-mem" x="48" y="307">- lastName : String</text>
+            <text class="cls-mem" x="48" y="323">- email : String</text>
+            <text class="cls-mem" x="48" y="339">- mobileNumber : String</text>
+            <rect class="box" x="40" y="358" width="250" height="36"/>
+            <text class="cls-mem" x="48" y="375">+ getFullName() : String</text>
+            <text class="cls-mem" x="48" y="389">+ addBill(b : MonthlyBill) : void</text>
+          </g>
+
+          <!-- ===================== Payment ===================== -->
+          <g>
+            <rect class="hdr" x="40" y="470" width="250" height="24"/>
+            <text class="cls-name" x="165" y="487" text-anchor="middle">Payment</text>
+            <rect class="box" x="40" y="494" width="250" height="52"/>
+            <text class="cls-mem" x="48" y="511">- amount : BigDecimal</text>
+            <text class="cls-mem" x="48" y="527">- paidAt : LocalDateTime</text>
+            <text class="cls-mem" x="48" y="543">- method : PaymentMethod</text>
+            <rect class="box" x="40" y="546" width="250" height="20"/>
+            <text class="cls-mem" x="48" y="561">+ getMethod() : PaymentMethod</text>
+          </g>
+
+          <!-- ===================== MonthlyBill (abstract) ===================== -->
+          <g>
+            <rect class="hdr" x="430" y="250" width="300" height="40"/>
+            <text class="cls-stereo" x="580" y="266" text-anchor="middle">&laquo;abstract&raquo;</text>
+            <text class="cls-name cls-abstract" x="580" y="283" text-anchor="middle">MonthlyBill</text>
+            <rect class="box" x="430" y="290" width="300" height="100"/>
+            <text class="cls-mem" x="438" y="307">- billingPeriodStart : LocalDate</text>
+            <text class="cls-mem" x="438" y="323">- billingPeriodEnd : LocalDate</text>
+            <text class="cls-mem" x="438" y="339">- generatedOn : LocalDate</text>
+            <text class="cls-mem" x="438" y="355">- amountDue : BigDecimal</text>
+            <text class="cls-mem" x="438" y="371">- status : BillStatus</text>
+            <text class="cls-mem" x="438" y="387">- disputeNote : String</text>
+            <rect class="box" x="430" y="390" width="300" height="68"/>
+            <text class="cls-mem" x="438" y="407">+ disputeDeadline() : LocalDate</text>
+            <text class="cls-mem" x="438" y="423">+ isDisputable(d : LocalDate) : boolean</text>
+            <text class="cls-mem" x="438" y="439">+ addUsage(u : CustomerUsage) : void</text>
+            <text class="cls-mem" x="438" y="455">+ getStatus() : BillStatus</text>
+          </g>
+
+          <!-- ===================== CustomerUsage ===================== -->
+          <g>
+            <rect class="hdr" x="430" y="560" width="300" height="24"/>
+            <text class="cls-name" x="580" y="577" text-anchor="middle">CustomerUsage</text>
+            <rect class="box" x="430" y="584" width="300" height="36"/>
+            <text class="cls-mem" x="438" y="601">- unitsConsumed : BigDecimal</text>
+            <rect class="box" x="430" y="620" width="300" height="20"/>
+            <text class="cls-mem" x="438" y="635">+ lineCost() : BigDecimal</text>
+          </g>
+
+          <!-- ===================== Resource ===================== -->
+          <g>
+            <rect class="hdr" x="880" y="560" width="260" height="24"/>
+            <text class="cls-name" x="1010" y="577" text-anchor="middle">Resource</text>
+            <rect class="box" x="880" y="584" width="260" height="40"/>
+            <text class="cls-mem" x="888" y="601">- utilityType : UtilityType</text>
+            <text class="cls-mem" x="888" y="617">- unitPrice : BigDecimal</text>
+            <rect class="box" x="880" y="624" width="260" height="20"/>
+            <text class="cls-mem" x="888" y="639">+ getUnitPrice() : BigDecimal</text>
+          </g>
+
+          <!-- ===================== Supplier ===================== -->
+          <g>
+            <rect class="hdr" x="880" y="250" width="260" height="24"/>
+            <text class="cls-name" x="1010" y="267" text-anchor="middle">Supplier</text>
+            <rect class="box" x="880" y="274" width="260" height="40"/>
+            <text class="cls-mem" x="888" y="291">- name : String</text>
+            <text class="cls-mem" x="888" y="307">- country : String</text>
+            <rect class="box" x="880" y="314" width="260" height="20"/>
+            <text class="cls-mem" x="888" y="329">+ addResource(r : Resource) : void</text>
+          </g>
+
+          <!-- ===================== Concrete bills ===================== -->
+          <g>
+            <rect class="hdr" x="350" y="760" width="170" height="24"/>
+            <text class="cls-name" x="435" y="777" text-anchor="middle">ElectricityBill</text>
+            <rect class="box" x="350" y="784" width="170" height="14"/>
+          </g>
+          <g>
+            <rect class="hdr" x="540" y="760" width="120" height="24"/>
+            <text class="cls-name" x="600" y="777" text-anchor="middle">GasBill</text>
+            <rect class="box" x="540" y="784" width="120" height="14"/>
+          </g>
+          <g>
+            <rect class="hdr" x="680" y="760" width="120" height="24"/>
+            <text class="cls-name" x="740" y="777" text-anchor="middle">WaterBill</text>
+            <rect class="box" x="680" y="784" width="120" height="14"/>
+          </g>
+
+          <!-- ===================== Inheritance (hollow triangle to parent) ===================== -->
+          <!-- BaseEntity inherited by Customer, MonthlyBill, Supplier, Resource, Payment, CustomerUsage -->
+          <path class="inherit" marker-end="url(#tri)" d="M165,250 L165,150 L470,150"/>
+          <path class="inherit" marker-end="url(#tri)" d="M580,250 L580,150"/>
+          <path class="inherit" marker-end="url(#tri)" d="M1010,250 L1010,150 L710,150"/>
+          <path class="inherit" marker-end="url(#tri)" d="M165,470 L165,420 L300,420 L300,150 L470,150"/>
+          <path class="inherit" marker-end="url(#tri)" d="M1010,560 L1010,150"/>
+          <path class="inherit" marker-end="url(#tri)" d="M580,560 L760,560 L760,150 L710,150"/>
+
+          <!-- Bill subtypes -> MonthlyBill -->
+          <path class="inherit" marker-end="url(#tri)" d="M435,760 L435,500 L580,500 L580,458"/>
+          <path class="inherit" marker-end="url(#tri)" d="M600,760 L600,458"/>
+          <path class="inherit" marker-end="url(#tri)" d="M740,760 L740,500 L600,500"/>
+
+          <!-- ===================== Associations ===================== -->
+          <!-- Customer 1 to many MonthlyBill -->
+          <path class="assoc" d="M290,300 L430,300"/>
+          <text class="mult" x="300" y="294">1</text>
+          <text class="mult" x="410" y="294" text-anchor="end">*</text>
+          <text class="role" x="360" y="316" text-anchor="middle">bills</text>
+
+          <!-- Customer 1 to many Payment -->
+          <path class="assoc" d="M165,394 L165,470"/>
+          <text class="mult" x="172" y="410">1</text>
+          <text class="mult" x="172" y="464">*</text>
+
+          <!-- Payment many to 1 MonthlyBill -->
+          <path class="assoc" d="M290,505 L360,505 L360,360 L430,360"/>
+          <text class="mult" x="300" y="499">*</text>
+          <text class="mult" x="412" y="354" text-anchor="end">1</text>
+
+          <!-- MonthlyBill 1 composes many CustomerUsage -->
+          <path class="assoc" marker-start="url(#diamond)" d="M580,458 L580,560"/>
+          <text class="mult" x="588" y="478">1</text>
+          <text class="mult" x="588" y="554">*</text>
+          <text class="role" x="588" y="516">usages</text>
+
+          <!-- CustomerUsage many to 1 Resource -->
+          <path class="assoc" d="M730,602 L880,602"/>
+          <text class="mult" x="740" y="596">*</text>
+          <text class="mult" x="870" y="596" text-anchor="end">1</text>
+
+          <!-- Supplier 1 composes many Resource -->
+          <path class="assoc" marker-start="url(#diamond)" d="M1010,334 L1010,560"/>
+          <text class="mult" x="1018" y="354">1</text>
+          <text class="mult" x="1018" y="554">*</text>
+          <text class="role" x="1018" y="450">resources</text>
+        </svg>
+      </div>
+      <figcaption><b>Figure 1.</b> UML class diagram. Hollow triangles denote generalisation; filled diamonds denote composition; association ends carry multiplicities (<code>1</code>, <code>*</code>). <code>BaseEntity</code> (&laquo;mappedSuperclass&raquo;) and <code>MonthlyBill</code> (&laquo;abstract&raquo;) are abstract.</figcaption>
+    </figure>
+  </section>
+
+  <section id="component">
+    <h2 class="sec"><span class="num">3</span>Component Diagram</h2>
+    <p>The component view shows the major Java EE building blocks and how they interact across tiers. The web tier (JSP + a controller servlet) drives session EJBs in the business tier; those EJBs use DAO components over JPA for persistence and integrate outbound with the external billing web service and the JMS payment queue. A provided interface (lollipop) and required interface (socket) notation shows the dependency direction.</p>
+    <figure>
+      <div class="canvas">
+        <svg viewBox="0 0 1120 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="UML component diagram">
+          <defs>
+            <marker id="dep" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+              <path d="M1,1 L9,5 L1,9" fill="none" stroke="#0a4a5e" stroke-width="1.3"/>
+            </marker>
+            <style>
+              .comp { fill:#ffffff; stroke:#1c3a47; stroke-width:1.5; }
+              .comp-hdr { font-weight:700; font-size:13px; fill:#11202b; }
+              .comp-st { font-size:10.5px; font-style:italic; fill:#0f6e8c; }
+              .tier-lbl { font-size:11px; letter-spacing:.16em; fill:#0a4a5e; font-weight:700; }
+              .tier { fill:none; stroke:#c9d6dd; stroke-width:1.2; stroke-dasharray:6 5; }
+              .wire { stroke:#0a4a5e; stroke-width:1.4; fill:none; }
+              .iface { stroke:#0a4a5e; stroke-width:1.4; fill:none; }
+            </style>
+          </defs>
+
+          <!-- Tier frames -->
+          <rect class="tier" x="20" y="40" width="200" height="300"/>
+          <text class="tier-lbl" x="30" y="60">CLIENT</text>
+          <rect class="tier" x="250" y="40" width="300" height="640"/>
+          <text class="tier-lbl" x="262" y="60">WEB TIER</text>
+          <rect class="tier" x="580" y="40" width="290" height="640"/>
+          <text class="tier-lbl" x="592" y="60">BUSINESS TIER (EJB)</text>
+          <rect class="tier" x="900" y="40" width="200" height="640"/>
+          <text class="tier-lbl" x="912" y="60">EIS / EXTERNAL</text>
+
+          <!-- Component box helper drawn inline -->
+          <!-- Browser -->
+          <g>
+            <rect class="comp" x="50" y="120" width="150" height="64"/>
+            <rect class="comp" x="40" y="130" width="22" height="13"/>
+            <rect class="comp" x="40" y="150" width="22" height="13"/>
+            <text class="comp-st" x="125" y="150" text-anchor="middle">&laquo;device&raquo;</text>
+            <text class="comp-hdr" x="125" y="168" text-anchor="middle">Web Browser</text>
+          </g>
+
+          <!-- Controller Servlet -->
+          <g>
+            <rect class="comp" x="290" y="110" width="210" height="64"/>
+            <rect class="comp" x="280" y="120" width="22" height="13"/>
+            <rect class="comp" x="280" y="140" width="22" height="13"/>
+            <text class="comp-st" x="395" y="140" text-anchor="middle">&laquo;servlet&raquo;</text>
+            <text class="comp-hdr" x="395" y="158" text-anchor="middle">SelfServiceController</text>
+          </g>
+          <!-- JSP Views -->
+          <g>
+            <rect class="comp" x="290" y="250" width="210" height="64"/>
+            <rect class="comp" x="280" y="260" width="22" height="13"/>
+            <rect class="comp" x="280" y="280" width="22" height="13"/>
+            <text class="comp-st" x="395" y="280" text-anchor="middle">&laquo;JSP&raquo;</text>
+            <text class="comp-hdr" x="395" y="298" text-anchor="middle">Workspace Views</text>
+          </g>
+
+          <!-- BillService EJB -->
+          <g>
+            <rect class="comp" x="610" y="110" width="220" height="64"/>
+            <rect class="comp" x="600" y="120" width="22" height="13"/>
+            <rect class="comp" x="600" y="140" width="22" height="13"/>
+            <text class="comp-st" x="720" y="140" text-anchor="middle">&laquo;session EJB&raquo;</text>
+            <text class="comp-hdr" x="720" y="158" text-anchor="middle">BillService</text>
+          </g>
+          <!-- NotificationService EJB (future) -->
+          <g>
+            <rect class="comp" x="610" y="250" width="220" height="64"/>
+            <rect class="comp" x="600" y="260" width="22" height="13"/>
+            <rect class="comp" x="600" y="280" width="22" height="13"/>
+            <text class="comp-st" x="720" y="280" text-anchor="middle">&laquo;MDB / future&raquo;</text>
+            <text class="comp-hdr" x="720" y="298" text-anchor="middle">NotificationService</text>
+          </g>
+          <!-- BillDAO -->
+          <g>
+            <rect class="comp" x="610" y="400" width="220" height="64"/>
+            <rect class="comp" x="600" y="410" width="22" height="13"/>
+            <rect class="comp" x="600" y="430" width="22" height="13"/>
+            <text class="comp-st" x="720" y="430" text-anchor="middle">&laquo;DAO&raquo;</text>
+            <text class="comp-hdr" x="720" y="448" text-anchor="middle">BillDao / BillDaoImpl</text>
+          </g>
+          <!-- JPA Provider -->
+          <g>
+            <rect class="comp" x="610" y="540" width="220" height="64"/>
+            <rect class="comp" x="600" y="550" width="22" height="13"/>
+            <rect class="comp" x="600" y="570" width="22" height="13"/>
+            <text class="comp-st" x="720" y="570" text-anchor="middle">&laquo;JPA provider&raquo;</text>
+            <text class="comp-hdr" x="720" y="588" text-anchor="middle">Hibernate / EntityManager</text>
+          </g>
+
+          <!-- External: Billing WS -->
+          <g>
+            <rect class="comp" x="920" y="110" width="160" height="60"/>
+            <rect class="comp" x="910" y="120" width="20" height="12"/>
+            <rect class="comp" x="910" y="138" width="20" height="12"/>
+            <text class="comp-st" x="1000" y="138" text-anchor="middle">&laquo;web service&raquo;</text>
+            <text class="comp-hdr" x="1000" y="156" text-anchor="middle">Billing System</text>
+          </g>
+          <!-- External: Payment JMS -->
+          <g>
+            <rect class="comp" x="920" y="250" width="160" height="60"/>
+            <rect class="comp" x="910" y="260" width="20" height="12"/>
+            <rect class="comp" x="910" y="278" width="20" height="12"/>
+            <text class="comp-st" x="1000" y="278" text-anchor="middle">&laquo;JMS queue&raquo;</text>
+            <text class="comp-hdr" x="1000" y="296" text-anchor="middle">Payment Gateway</text>
+          </g>
+          <!-- External: SMS provider -->
+          <g>
+            <rect class="comp" x="920" y="400" width="160" height="60"/>
+            <rect class="comp" x="910" y="410" width="20" height="12"/>
+            <rect class="comp" x="910" y="428" width="20" height="12"/>
+            <text class="comp-st" x="1000" y="428" text-anchor="middle">&laquo;external&raquo;</text>
+            <text class="comp-hdr" x="1000" y="446" text-anchor="middle">SMS / Push Provider</text>
+          </g>
+          <!-- DB -->
+          <g>
+            <path class="comp" d="M640,640 a80,12 0 0,0 160,0 v-40 a80,12 0 0,0 -160,0 z"/>
+            <path class="iface" d="M640,600 a80,12 0 0,0 160,0"/>
+            <text class="comp-hdr" x="720" y="628" text-anchor="middle">Utility DB</text>
+          </g>
+
+          <!-- Wires (dependencies) -->
+          <path class="wire" marker-end="url(#dep)" d="M200,150 L288,148"/>      <!-- browser -> servlet -->
+          <path class="wire" marker-end="url(#dep)" d="M395,174 L395,248"/>      <!-- servlet -> jsp -->
+          <path class="wire" marker-end="url(#dep)" d="M500,148 L608,148"/>      <!-- servlet -> BillService -->
+          <path class="wire" marker-end="url(#dep)" d="M720,174 L720,398"/>      <!-- BillService -> DAO -->
+          <path class="wire" marker-end="url(#dep)" d="M720,464 L720,538"/>      <!-- DAO -> JPA -->
+          <path class="wire" marker-end="url(#dep)" d="M720,604 L720,600"/>      <!-- JPA -> DB -->
+          <path class="wire" marker-end="url(#dep)" d="M830,140 L918,140"/>      <!-- BillService -> Billing WS -->
+          <path class="wire" marker-end="url(#dep)" d="M830,160 C880,200 880,250 918,270"/> <!-- BillService -> Payment JMS -->
+          <path class="wire" marker-end="url(#dep)" d="M830,282 L918,430"/>      <!-- Notification -> SMS -->
+        </svg>
+      </div>
+      <figcaption><b>Figure 2.</b> UML component diagram. Dashed arrows are <code>&laquo;use&raquo;</code> dependencies. <code>NotificationService</code> (a message-driven bean) is included to satisfy the planned push-notification enhancement.</figcaption>
+    </figure>
+  </section>
+
+  <section id="deployment">
+    <h2 class="sec"><span class="num">4</span>Deployment Diagram</h2>
+    <p>The deployment view describes the physical tiers. Clients reach a load-balanced pair of Java EE application server nodes (web + EJB containers co-located) over HTTPS; the app servers connect to a clustered relational database and reach the external billing and payment systems over the corporate network.</p>
+    <figure>
+      <div class="canvas">
+        <svg viewBox="0 0 1100 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="UML deployment diagram">
+          <defs>
+            <style>
+              .node-top { fill:#eaf2f5; stroke:#1c3a47; stroke-width:1.5; }
+              .node-face { fill:#ffffff; stroke:#1c3a47; stroke-width:1.5; }
+              .node-side { fill:#dce8ec; stroke:#1c3a47; stroke-width:1.5; }
+              .node-lbl { font-weight:700; font-size:13px; fill:#11202b; }
+              .node-st { font-size:10.5px; font-style:italic; fill:#0f6e8c; }
+              .artifact { font-size:11px; fill:#3c5563; }
+              .link { stroke:#0a4a5e; stroke-width:1.6; fill:none; }
+              .link-lbl { font-size:10.5px; fill:#0a4a5e; }
+            </style>
+          </defs>
+
+          <!-- helper: 3D node drawn explicitly each time -->
+          <!-- Client device -->
+          <g>
+            <polygon class="node-top" points="60,120 130,100 230,100 160,120"/>
+            <polygon class="node-side" points="160,120 230,100 230,200 160,220"/>
+            <rect class="node-face" x="60" y="120" width="100" height="100"/>
+            <text class="node-st" x="110" y="150" text-anchor="middle">&laquo;device&raquo;</text>
+            <text class="node-lbl" x="110" y="170" text-anchor="middle">Customer</text>
+            <text class="node-lbl" x="110" y="186" text-anchor="middle">Device</text>
+            <text class="artifact" x="110" y="206" text-anchor="middle">Browser</text>
+          </g>
+
+          <!-- App server node 1 -->
+          <g>
+            <polygon class="node-top" points="380,90 470,66 660,66 570,90"/>
+            <polygon class="node-side" points="570,90 660,66 660,250 570,274"/>
+            <rect class="node-face" x="380" y="90" width="190" height="184"/>
+            <text class="node-st" x="475" y="116" text-anchor="middle">&laquo;app server&raquo;</text>
+            <text class="node-lbl" x="475" y="134" text-anchor="middle">Java EE Node 1</text>
+            <line x1="392" y1="146" x2="558" y2="146" stroke="#c9d6dd"/>
+            <text class="artifact" x="392" y="166">&#9633; selfservice.war</text>
+            <text class="artifact" x="392" y="186">&#9633; billing-ejb.jar</text>
+            <text class="artifact" x="392" y="206">&#9633; Web + EJB container</text>
+            <text class="artifact" x="392" y="226">&#9633; JPA persistence unit</text>
+          </g>
+
+          <!-- App server node 2 -->
+          <g>
+            <polygon class="node-top" points="380,300 470,276 660,276 570,300"/>
+            <polygon class="node-side" points="570,300 660,276 660,420 570,444"/>
+            <rect class="node-face" x="380" y="300" width="190" height="144"/>
+            <text class="node-st" x="475" y="326" text-anchor="middle">&laquo;app server&raquo;</text>
+            <text class="node-lbl" x="475" y="344" text-anchor="middle">Java EE Node 2</text>
+            <line x1="392" y1="356" x2="558" y2="356" stroke="#c9d6dd"/>
+            <text class="artifact" x="392" y="376">&#9633; selfservice.war</text>
+            <text class="artifact" x="392" y="396">&#9633; billing-ejb.jar</text>
+            <text class="artifact" x="392" y="416">&#9633; (cluster replica)</text>
+          </g>
+
+          <!-- DB server -->
+          <g>
+            <polygon class="node-top" points="800,150 880,130 1040,130 960,150"/>
+            <polygon class="node-side" points="960,150 1040,130 1040,300 960,320"/>
+            <rect class="node-face" x="800" y="150" width="160" height="170"/>
+            <text class="node-st" x="880" y="176" text-anchor="middle">&laquo;db server&raquo;</text>
+            <text class="node-lbl" x="880" y="194" text-anchor="middle">Database</text>
+            <text class="node-lbl" x="880" y="210" text-anchor="middle">Cluster</text>
+            <line x1="812" y1="224" x2="948" y2="224" stroke="#c9d6dd"/>
+            <text class="artifact" x="812" y="244">&#9633; Utility schema</text>
+            <text class="artifact" x="812" y="264">&#9633; RDBMS (primary)</text>
+            <text class="artifact" x="812" y="284">&#9633; standby replica</text>
+          </g>
+
+          <!-- External systems node -->
+          <g>
+            <polygon class="node-top" points="800,380 880,360 1040,360 960,380"/>
+            <polygon class="node-side" points="960,380 1040,360 1040,500 960,520"/>
+            <rect class="node-face" x="800" y="380" width="160" height="140"/>
+            <text class="node-st" x="880" y="406" text-anchor="middle">&laquo;external&raquo;</text>
+            <text class="node-lbl" x="880" y="424" text-anchor="middle">3rd-Party Systems</text>
+            <line x1="812" y1="436" x2="948" y2="436" stroke="#c9d6dd"/>
+            <text class="artifact" x="812" y="456">&#9633; Billing WS</text>
+            <text class="artifact" x="812" y="476">&#9633; Payment JMS</text>
+            <text class="artifact" x="812" y="496">&#9633; SMS/Push API</text>
+          </g>
+
+          <!-- Communication paths -->
+          <path class="link" d="M230,160 C300,160 320,170 378,176"/>
+          <text class="link-lbl" x="250" y="150">&laquo;HTTPS&raquo;</text>
+          <path class="link" d="M230,180 C300,260 320,350 378,360"/>
+          <path class="link" d="M570,180 C660,170 720,200 800,210"/>
+          <text class="link-lbl" x="640" y="172">&laquo;JDBC&raquo;</text>
+          <path class="link" d="M570,360 C680,330 720,260 800,250"/>
+          <path class="link" d="M570,210 C660,300 720,400 800,430"/>
+          <text class="link-lbl" x="600" y="330">&laquo;SOAP / JMS&raquo;</text>
+          <path class="link" d="M570,330 C700,400 740,420 800,450"/>
+        </svg>
+      </div>
+      <figcaption><b>Figure 3.</b> UML deployment diagram. Two clustered Java EE nodes host the web and EJB containers; a clustered RDBMS provides persistence; external systems are reached over the corporate network.</figcaption>
+    </figure>
+  </section>
+
+  <section id="calc">
+    <h2 class="sec"><span class="num">5</span>Sequence Diagram &mdash; Calculate Bill</h2>
+    <p>The billing system is invoked externally (scheduled or manual). For each customer it gathers usage and pricing, the system sums the line costs, and the generated bill is forwarded to the customer&rsquo;s workspace.</p>
+    <figure>
+      <div class="canvas">
+        <svg viewBox="0 0 1080 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Calculate Bill sequence diagram">
+          <defs>
+            <marker id="sync" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,1 L9,5 L1,9 Z" fill="#1c3a47"/></marker>
+            <marker id="ret" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,1 L9,5 L1,9" fill="none" stroke="#1c3a47" stroke-width="1.2"/></marker>
+            <style>
+              .actor-box { fill:#eaf2f5; stroke:#1c3a47; stroke-width:1.4; }
+              .actor-lbl { font-size:12px; font-weight:700; fill:#11202b; text-anchor:middle; }
+              .lifeline { stroke:#9bb3bd; stroke-width:1.2; stroke-dasharray:5 4; }
+              .activation { fill:#dbe9ee; stroke:#1c3a47; stroke-width:1.1; }
+              .msg { stroke:#1c3a47; stroke-width:1.3; fill:none; }
+              .msg-lbl { font-size:11px; fill:#0a4a5e; }
+              .ret-lbl { font-size:10.5px; fill:#3c5563; font-style:italic; }
+            </style>
+          </defs>
+          <!-- lifelines -->
+          <g>
+            <rect class="actor-box" x="40" y="20" width="130" height="34"/><text class="actor-lbl" x="105" y="42">:BillingSystem</text>
+            <line class="lifeline" x1="105" y1="54" x2="105" y2="490"/>
+            <rect class="actor-box" x="240" y="20" width="120" height="34"/><text class="actor-lbl" x="300" y="42">:BillService</text>
+            <line class="lifeline" x1="300" y1="54" x2="300" y2="490"/>
+            <rect class="actor-box" x="450" y="20" width="120" height="34"/><text class="actor-lbl" x="510" y="42">bill:MonthlyBill</text>
+            <line class="lifeline" x1="510" y1="54" x2="510" y2="490"/>
+            <rect class="actor-box" x="660" y="20" width="140" height="34"/><text class="actor-lbl" x="730" y="42">u:CustomerUsage</text>
+            <line class="lifeline" x1="730" y1="54" x2="730" y2="490"/>
+            <rect class="actor-box" x="890" y="20" width="120" height="34"/><text class="actor-lbl" x="950" y="42">:BillDao</text>
+            <line class="lifeline" x1="950" y1="54" x2="950" y2="490"/>
+          </g>
+          <!-- activations -->
+          <rect class="activation" x="296" y="90" width="8" height="360"/>
+          <rect class="activation" x="506" y="120" width="8" height="250"/>
+          <rect class="activation" x="726" y="200" width="8" height="40"/>
+          <rect class="activation" x="946" y="400" width="8" height="40"/>
+          <!-- messages -->
+          <path class="msg" marker-end="url(#sync)" d="M105,90 L296,90"/><text class="msg-lbl" x="120" y="84">calculateBill(bill)</text>
+          <path class="msg" marker-end="url(#sync)" d="M304,120 L506,120"/><text class="msg-lbl" x="320" y="114">getUsages()</text>
+          <path class="msg" marker-end="url(#ret)" d="M506,160 L304,160" stroke-dasharray="4 3"/><text class="ret-lbl" x="320" y="154">List&lt;CustomerUsage&gt;</text>
+          <path class="msg" marker-end="url(#sync)" d="M304,200 L726,200"/><text class="msg-lbl" x="340" y="194">lineCost()  [for each, via stream]</text>
+          <path class="msg" marker-end="url(#ret)" d="M726,238 L304,238" stroke-dasharray="4 3"/><text class="ret-lbl" x="340" y="232">BigDecimal (units &times; unitPrice)</text>
+          <path class="msg" marker-end="url(#sync)" d="M304,300 L506,300"/><text class="msg-lbl" x="320" y="294">setAmountDue(total) / setStatus(OUTSTANDING)</text>
+          <path class="msg" marker-end="url(#sync)" d="M304,400 L946,400"/><text class="msg-lbl" x="360" y="394">save(bill)</text>
+          <path class="msg" marker-end="url(#ret)" d="M946,438 L304,438" stroke-dasharray="4 3"/><text class="ret-lbl" x="360" y="432">persisted bill &rarr; BillDTO to workspace</text>
+        </svg>
+      </div>
+      <figcaption><b>Figure 4.</b> Calculate Bill. The total is computed with the functional <code>stream().map(lineCost).reduce(+)</code> pipeline before the bill is persisted via the DAO.</figcaption>
+    </figure>
+  </section>
+
+  <section id="view">
+    <h2 class="sec"><span class="num">6</span>Sequence Diagram &mdash; View Bill</h2>
+    <p>The customer logs in, the application loads the workspace (their bills as DTOs), and the customer selects and reviews the most recent bill before proceeding to pay.</p>
+    <figure>
+      <div class="canvas">
+        <svg viewBox="0 0 1080 540" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="View Bill sequence diagram">
+          <defs>
+            <marker id="sync2" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,1 L9,5 L1,9 Z" fill="#1c3a47"/></marker>
+            <marker id="ret2" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,1 L9,5 L1,9" fill="none" stroke="#1c3a47" stroke-width="1.2"/></marker>
+            <style>
+              .a-box{fill:#eaf2f5;stroke:#1c3a47;stroke-width:1.4}.a-lbl{font-size:12px;font-weight:700;fill:#11202b;text-anchor:middle}
+              .ll{stroke:#9bb3bd;stroke-width:1.2;stroke-dasharray:5 4}.act{fill:#dbe9ee;stroke:#1c3a47;stroke-width:1.1}
+              .m{stroke:#1c3a47;stroke-width:1.3;fill:none}.ml{font-size:11px;fill:#0a4a5e}.rl{font-size:10.5px;fill:#3c5563;font-style:italic}
+            </style>
+          </defs>
+          <!-- actor (stick) -->
+          <g transform="translate(70,18)">
+            <circle cx="0" cy="8" r="8" fill="#fff" stroke="#1c3a47" stroke-width="1.4"/>
+            <line x1="0" y1="16" x2="0" y2="34" stroke="#1c3a47" stroke-width="1.4"/>
+            <line x1="-12" y1="24" x2="12" y2="24" stroke="#1c3a47" stroke-width="1.4"/>
+            <line x1="0" y1="34" x2="-10" y2="48" stroke="#1c3a47" stroke-width="1.4"/>
+            <line x1="0" y1="34" x2="10" y2="48" stroke="#1c3a47" stroke-width="1.4"/>
+            <text class="a-lbl" x="0" y="64">Customer</text>
+          </g>
+          <line class="ll" x1="70" y1="86" x2="70" y2="510"/>
+          <rect class="a-box" x="230" y="20" width="150" height="34"/><text class="a-lbl" x="305" y="42">:SelfServiceController</text>
+          <line class="ll" x1="305" y1="54" x2="305" y2="510"/>
+          <rect class="a-box" x="470" y="20" width="120" height="34"/><text class="a-lbl" x="530" y="42">:BillService</text>
+          <line class="ll" x1="530" y1="54" x2="530" y2="510"/>
+          <rect class="a-box" x="700" y="20" width="120" height="34"/><text class="a-lbl" x="760" y="42">:BillDao</text>
+          <line class="ll" x1="760" y1="54" x2="760" y2="510"/>
+          <rect class="a-box" x="900" y="20" width="130" height="34"/><text class="a-lbl" x="965" y="42">:BillMapper</text>
+          <line class="ll" x1="965" y1="54" x2="965" y2="510"/>
+          <!-- activations -->
+          <rect class="act" x="301" y="110" width="8" height="360"/>
+          <rect class="act" x="526" y="140" width="8" height="300"/>
+          <rect class="act" x="756" y="180" width="8" height="40"/>
+          <rect class="act" x="961" y="300" width="8" height="40"/>
+          <!-- messages -->
+          <path class="m" marker-end="url(#sync2)" d="M70,110 L301,110"/><text class="ml" x="90" y="104">login() / openWorkspace()</text>
+          <path class="m" marker-end="url(#sync2)" d="M309,140 L526,140"/><text class="ml" x="325" y="134">viewWorkspace(customerId)</text>
+          <path class="m" marker-end="url(#sync2)" d="M534,180 L756,180"/><text class="ml" x="550" y="174">findByCustomerId(id)</text>
+          <path class="m" marker-end="url(#ret2)" d="M756,218 L534,218" stroke-dasharray="4 3"/><text class="rl" x="550" y="212">List&lt;MonthlyBill&gt;</text>
+          <path class="m" marker-end="url(#sync2)" d="M534,300 L961,300"/><text class="ml" x="560" y="294">toDtoList(bills)  [stream/map/collect]</text>
+          <path class="m" marker-end="url(#ret2)" d="M961,338 L534,338" stroke-dasharray="4 3"/><text class="rl" x="560" y="332">List&lt;BillDTO&gt;</text>
+          <path class="m" marker-end="url(#ret2)" d="M526,400 L309,400" stroke-dasharray="4 3"/><text class="rl" x="325" y="394">workspace DTOs</text>
+          <path class="m" marker-end="url(#ret2)" d="M301,450 L78,450" stroke-dasharray="4 3"/><text class="rl" x="95" y="444">rendered bills (review most recent)</text>
+        </svg>
+      </div>
+      <figcaption><b>Figure 5.</b> View Bill. Entities are converted to <code>BillDTO</code> via the <code>stream().map().collect(Collectors.toList())</code> pipeline, so the controller/JSP never touch JPA entities.</figcaption>
+    </figure>
+  </section>
+
+  <section id="dispute">
+    <h2 class="sec"><span class="num">7</span>Sequence Diagram &mdash; Dispute Bill</h2>
+    <p>The customer rejects a bill within the 30-day window and supplies supporting text. The system checks the bill is still disputable, records the note, sets the status to <code>DISPUTED</code>, and forwards it to a call-centre agent&rsquo;s workspace.</p>
+    <figure>
+      <div class="canvas">
+        <svg viewBox="0 0 1080 540" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dispute Bill sequence diagram">
+          <defs>
+            <marker id="sync3" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,1 L9,5 L1,9 Z" fill="#1c3a47"/></marker>
+            <marker id="ret3" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,1 L9,5 L1,9" fill="none" stroke="#1c3a47" stroke-width="1.2"/></marker>
+            <style>
+              .a-box{fill:#eaf2f5;stroke:#1c3a47;stroke-width:1.4}.a-lbl{font-size:12px;font-weight:700;fill:#11202b;text-anchor:middle}
+              .ll{stroke:#9bb3bd;stroke-width:1.2;stroke-dasharray:5 4}.act{fill:#dbe9ee;stroke:#1c3a47;stroke-width:1.1}
+              .m{stroke:#1c3a47;stroke-width:1.3;fill:none}.ml{font-size:11px;fill:#0a4a5e}.rl{font-size:10.5px;fill:#3c5563;font-style:italic}
+              .frag{fill:none;stroke:#c4762a;stroke-width:1.2}.frag-lbl{font-size:10.5px;font-weight:700;fill:#c4762a}
+            </style>
+          </defs>
+          <g transform="translate(70,18)">
+            <circle cx="0" cy="8" r="8" fill="#fff" stroke="#1c3a47" stroke-width="1.4"/>
+            <line x1="0" y1="16" x2="0" y2="34" stroke="#1c3a47" stroke-width="1.4"/>
+            <line x1="-12" y1="24" x2="12" y2="24" stroke="#1c3a47" stroke-width="1.4"/>
+            <line x1="0" y1="34" x2="-10" y2="48" stroke="#1c3a47" stroke-width="1.4"/>
+            <line x1="0" y1="34" x2="10" y2="48" stroke="#1c3a47" stroke-width="1.4"/>
+            <text class="a-lbl" x="0" y="64">Customer</text>
+          </g>
+          <line class="ll" x1="70" y1="86" x2="70" y2="510"/>
+          <rect class="a-box" x="220" y="20" width="120" height="34"/><text class="a-lbl" x="280" y="42">:BillService</text>
+          <line class="ll" x1="280" y1="54" x2="280" y2="510"/>
+          <rect class="a-box" x="430" y="20" width="120" height="34"/><text class="a-lbl" x="490" y="42">:BillDao</text>
+          <line class="ll" x1="490" y1="54" x2="490" y2="510"/>
+          <rect class="a-box" x="640" y="20" width="130" height="34"/><text class="a-lbl" x="705" y="42">bill:MonthlyBill</text>
+          <line class="ll" x1="705" y1="54" x2="705" y2="510"/>
+          <rect class="a-box" x="880" y="20" width="160" height="34"/><text class="a-lbl" x="960" y="42">:CallCentreWorkspace</text>
+          <line class="ll" x1="960" y1="54" x2="960" y2="510"/>
+          <!-- activations -->
+          <rect class="act" x="276" y="100" width="8" height="380"/>
+          <rect class="act" x="486" y="130" width="8" height="40"/>
+          <rect class="act" x="701" y="240" width="8" height="120"/>
+          <rect class="act" x="956" y="420" width="8" height="40"/>
+          <!-- messages -->
+          <path class="m" marker-end="url(#sync3)" d="M70,100 L276,100"/><text class="ml" x="86" y="94">disputeBill(billId, context)</text>
+          <path class="m" marker-end="url(#sync3)" d="M284,130 L486,130"/><text class="ml" x="300" y="124">findById(billId)</text>
+          <path class="m" marker-end="url(#ret3)" d="M486,168 L284,168" stroke-dasharray="4 3"/><text class="rl" x="300" y="162">Optional&lt;MonthlyBill&gt;</text>
+          <!-- opt fragment -->
+          <rect class="frag" x="258" y="200" width="520" height="180"/>
+          <path class="frag" d="M258,200 h60 v16 l-10,10 h-50 z"/>
+          <text class="frag-lbl" x="266" y="214">opt</text>
+          <text class="frag-lbl" x="330" y="214">[ isDisputable(now) == true ]</text>
+          <path class="m" marker-end="url(#sync3)" d="M284,240 L701,240"/><text class="ml" x="320" y="234">isDisputable(now)</text>
+          <path class="m" marker-end="url(#sync3)" d="M284,290 L701,290"/><text class="ml" x="320" y="284">setStatus(DISPUTED) / setDisputeNote(context)</text>
+          <path class="m" marker-end="url(#sync3)" d="M284,350 L486,350"/><text class="ml" x="300" y="344">save(bill)</text>
+          <path class="m" marker-end="url(#sync3)" d="M284,420 L956,420"/><text class="ml" x="320" y="414">forwardToAgent(billDTO)</text>
+          <path class="m" marker-end="url(#ret3)" d="M276,470 L78,470" stroke-dasharray="4 3"/><text class="rl" x="95" y="464">BillDTO (status = Disputed)</text>
+        </svg>
+      </div>
+      <figcaption><b>Figure 6.</b> Dispute Bill. The DAO returns an <code>Optional&lt;MonthlyBill&gt;</code>; the <code>opt</code> fragment guards on the 30-day <code>isDisputable</code> rule before the bill is routed to the agent.</figcaption>
+    </figure>
+  </section>
+
+  <section id="resolve">
+    <h2 class="sec"><span class="num">8</span>Sequence Diagram &mdash; Resolve Disputed Bill</h2>
+    <p>A call-centre agent reviews a disputed bill and either upholds the dispute (status <code>RESOLVED</code>) or rejects it and returns the bill to the customer for payment unchanged (status <code>REJECTED_DISPUTE</code>).</p>
+    <figure>
+      <div class="canvas">
+        <svg viewBox="0 0 1080 540" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Resolve Disputed Bill sequence diagram">
+          <defs>
+            <marker id="sync4" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,1 L9,5 L1,9 Z" fill="#1c3a47"/></marker>
+            <marker id="ret4" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,1 L9,5 L1,9" fill="none" stroke="#1c3a47" stroke-width="1.2"/></marker>
+            <style>
+              .a-box{fill:#eaf2f5;stroke:#1c3a47;stroke-width:1.4}.a-lbl{font-size:12px;font-weight:700;fill:#11202b;text-anchor:middle}
+              .ll{stroke:#9bb3bd;stroke-width:1.2;stroke-dasharray:5 4}.act{fill:#dbe9ee;stroke:#1c3a47;stroke-width:1.1}
+              .m{stroke:#1c3a47;stroke-width:1.3;fill:none}.ml{font-size:11px;fill:#0a4a5e}.rl{font-size:10.5px;fill:#3c5563;font-style:italic}
+              .frag{fill:none;stroke:#c4762a;stroke-width:1.2}.frag-lbl{font-size:10.5px;font-weight:700;fill:#c4762a}
+              .divider{stroke:#c4762a;stroke-width:1;stroke-dasharray:4 3}
+            </style>
+          </defs>
+          <g transform="translate(80,18)">
+            <circle cx="0" cy="8" r="8" fill="#fff" stroke="#1c3a47" stroke-width="1.4"/>
+            <line x1="0" y1="16" x2="0" y2="34" stroke="#1c3a47" stroke-width="1.4"/>
+            <line x1="-12" y1="24" x2="12" y2="24" stroke="#1c3a47" stroke-width="1.4"/>
+            <line x1="0" y1="34" x2="-10" y2="48" stroke="#1c3a47" stroke-width="1.4"/>
+            <line x1="0" y1="34" x2="10" y2="48" stroke="#1c3a47" stroke-width="1.4"/>
+            <text class="a-lbl" x="0" y="64">Call Centre Agent</text>
+          </g>
+          <line class="ll" x1="80" y1="86" x2="80" y2="510"/>
+          <rect class="a-box" x="250" y="20" width="120" height="34"/><text class="a-lbl" x="310" y="42">:BillService</text>
+          <line class="ll" x1="310" y1="54" x2="310" y2="510"/>
+          <rect class="a-box" x="470" y="20" width="120" height="34"/><text class="a-lbl" x="530" y="42">:BillDao</text>
+          <line class="ll" x1="530" y1="54" x2="530" y2="510"/>
+          <rect class="a-box" x="700" y="20" width="130" height="34"/><text class="a-lbl" x="765" y="42">bill:MonthlyBill</text>
+          <line class="ll" x1="765" y1="54" x2="765" y2="510"/>
+          <!-- activations -->
+          <rect class="act" x="306" y="100" width="8" height="380"/>
+          <rect class="act" x="526" y="130" width="8" height="40"/>
+          <rect class="act" x="761" y="250" width="8" height="160"/>
+          <!-- messages -->
+          <path class="m" marker-end="url(#sync4)" d="M80,100 L306,100"/><text class="ml" x="96" y="94">resolveDispute(billId, upheld)</text>
+          <path class="m" marker-end="url(#sync4)" d="M314,130 L526,130"/><text class="ml" x="330" y="124">findById(billId)</text>
+          <path class="m" marker-end="url(#ret4)" d="M526,168 L314,168" stroke-dasharray="4 3"/><text class="rl" x="330" y="162">Optional&lt;MonthlyBill&gt; (orElseThrow)</text>
+          <!-- alt fragment -->
+          <rect class="frag" x="290" y="220" width="500" height="200"/>
+          <path class="frag" d="M290,220 h54 v16 l-10,10 h-44 z"/>
+          <text class="frag-lbl" x="298" y="234">alt</text>
+          <text class="frag-lbl" x="360" y="234">[ upheld == true ]</text>
+          <path class="m" marker-end="url(#sync4)" d="M314,260 L761,260"/><text class="ml" x="350" y="254">setStatus(RESOLVED)</text>
+          <line class="divider" x1="290" y1="320" x2="790" y2="320"/>
+          <text class="frag-lbl" x="360" y="336">[ else ]</text>
+          <path class="m" marker-end="url(#sync4)" d="M314,360 L761,360"/><text class="ml" x="350" y="354">setStatus(REJECTED_DISPUTE)</text>
+          <path class="m" marker-end="url(#sync4)" d="M314,445 L526,445"/><text class="ml" x="330" y="439">save(bill)</text>
+          <path class="m" marker-end="url(#ret4)" d="M306,485 L88,485" stroke-dasharray="4 3"/><text class="rl" x="100" y="479">BillDTO (resolved / returned for payment)</text>
+        </svg>
+      </div>
+      <figcaption><b>Figure 7.</b> Resolve Disputed Bill. The DAO <code>Optional</code> is consumed with <code>orElseThrow</code>; the <code>alt</code> fragment captures the agent&rsquo;s uphold-vs-reject decision.</figcaption>
+    </figure>
+  </section>
+
+  <section id="pay">
+    <h2 class="sec"><span class="num">9</span>Sequence Diagram &mdash; Pay Bill</h2>
+    <p>The customer selects a bill due for payment and supplies card details. The system records a <code>Payment</code>, forwards the payment to the external clearing house (JMS), and marks the bill <code>PAID</code>.</p>
+    <figure>
+      <div class="canvas">
+        <svg viewBox="0 0 1100 540" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pay Bill sequence diagram">
+          <defs>
+            <marker id="sync5" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,1 L9,5 L1,9 Z" fill="#1c3a47"/></marker>
+            <marker id="ret5" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,1 L9,5 L1,9" fill="none" stroke="#1c3a47" stroke-width="1.2"/></marker>
+            <marker id="async5" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,1 L9,5 M1,9 L9,5" fill="none" stroke="#1c3a47" stroke-width="1.3"/></marker>
+            <style>
+              .a-box{fill:#eaf2f5;stroke:#1c3a47;stroke-width:1.4}.a-lbl{font-size:12px;font-weight:700;fill:#11202b;text-anchor:middle}
+              .ll{stroke:#9bb3bd;stroke-width:1.2;stroke-dasharray:5 4}.act{fill:#dbe9ee;stroke:#1c3a47;stroke-width:1.1}
+              .m{stroke:#1c3a47;stroke-width:1.3;fill:none}.ml{font-size:11px;fill:#0a4a5e}.rl{font-size:10.5px;fill:#3c5563;font-style:italic}
+            </style>
+          </defs>
+          <g transform="translate(70,18)">
+            <circle cx="0" cy="8" r="8" fill="#fff" stroke="#1c3a47" stroke-width="1.4"/>
+            <line x1="0" y1="16" x2="0" y2="34" stroke="#1c3a47" stroke-width="1.4"/>
+            <line x1="-12" y1="24" x2="12" y2="24" stroke="#1c3a47" stroke-width="1.4"/>
+            <line x1="0" y1="34" x2="-10" y2="48" stroke="#1c3a47" stroke-width="1.4"/>
+            <line x1="0" y1="34" x2="10" y2="48" stroke="#1c3a47" stroke-width="1.4"/>
+            <text class="a-lbl" x="0" y="64">Customer</text>
+          </g>
+          <line class="ll" x1="70" y1="86" x2="70" y2="510"/>
+          <rect class="a-box" x="210" y="20" width="120" height="34"/><text class="a-lbl" x="270" y="42">:BillService</text>
+          <line class="ll" x1="270" y1="54" x2="270" y2="510"/>
+          <rect class="a-box" x="410" y="20" width="120" height="34"/><text class="a-lbl" x="470" y="42">p:Payment</text>
+          <line class="ll" x1="470" y1="54" x2="470" y2="510"/>
+          <rect class="a-box" x="600" y="20" width="130" height="34"/><text class="a-lbl" x="665" y="42">bill:MonthlyBill</text>
+          <line class="ll" x1="665" y1="54" x2="665" y2="510"/>
+          <rect class="a-box" x="790" y="20" width="100" height="34"/><text class="a-lbl" x="840" y="42">:BillDao</text>
+          <line class="ll" x1="840" y1="54" x2="840" y2="510"/>
+          <rect class="a-box" x="940" y="20" width="140" height="34"/><text class="a-lbl" x="1010" y="42">:PaymentQueue</text>
+          <line class="ll" x1="1010" y1="54" x2="1010" y2="510"/>
+          <!-- activations -->
+          <rect class="act" x="266" y="100" width="8" height="380"/>
+          <rect class="act" x="466" y="160" width="8" height="40"/>
+          <rect class="act" x="661" y="320" width="8" height="40"/>
+          <rect class="act" x="836" y="380" width="8" height="40"/>
+          <!-- messages -->
+          <path class="m" marker-end="url(#sync5)" d="M70,100 L266,100"/><text class="ml" x="86" y="94">payBill(billId, method)</text>
+          <path class="m" marker-end="url(#sync5)" d="M274,160 L466,160"/><text class="ml" x="290" y="154">new Payment(customer, bill, amount, method)</text>
+          <path class="m" marker-end="url(#async5)" d="M274,250 L1010,250"/><text class="ml" x="320" y="244">enqueue(paymentDetails)  &laquo;JMS, async&raquo;</text>
+          <path class="m" marker-end="url(#sync5)" d="M274,320 L661,320"/><text class="ml" x="320" y="314">setStatus(PAID)</text>
+          <path class="m" marker-end="url(#sync5)" d="M274,380 L836,380"/><text class="ml" x="320" y="374">save(bill)</text>
+          <path class="m" marker-end="url(#ret5)" d="M266,460 L78,460" stroke-dasharray="4 3"/><text class="rl" x="95" y="454">BillDTO (status = Paid)</text>
+        </svg>
+      </div>
+      <figcaption><b>Figure 8.</b> Pay Bill. The payment is placed on the external clearing-house <code>&laquo;JMS&raquo;</code> queue asynchronously (open arrowhead), decoupling the customer&rsquo;s confirmation from third-party processing latency.</figcaption>
+    </figure>
+  </section>
+
+  <section id="risks">
+    <h2 class="sec"><span class="num">10</span>Top Technical Risks &amp; Mitigations</h2>
+    <p>The three risks below carry the most material impact on the project. Each is rated for severity and paired with a concrete mitigation strategy.</p>
+    <table class="grid">
+      <tr>
+        <th style="width:22%">Risk</th>
+        <th style="width:10%">Severity</th>
+        <th style="width:34%">Description</th>
+        <th style="width:34%">Mitigation Strategy</th>
+      </tr>
+      <tr>
+        <td><b>Coupling to the external billing web service</b></td>
+        <td><span class="risk-tag sev-high">HIGH</span></td>
+        <td>Bills are produced by a separately-owned billing system reached over web services. Its availability, latency and contract (WSDL/schema) changes are outside our control, and any outage or breaking change directly blocks the core View/Calculate flows.</td>
+        <td>Introduce an <b>anti-corruption / adapter layer</b> that isolates the external contract behind our own interface, add a <b>circuit breaker with timeouts and graceful degradation</b>, and <b>cache</b> the most recently generated bills so customers can still view (if not regenerate) during a billing-system outage. Version the adapter against the published WSDL and add contract tests.</td>
+      </tr>
+      <tr>
+        <td><b>Third-party payment gateway (JMS) reliability</b></td>
+        <td><span class="risk-tag sev-high">HIGH</span></td>
+        <td>Payments are handled by a third party exposed as a JMS queue. Lost, duplicated or delayed messages risk double-charging, unconfirmed payments, or bills wrongly left outstanding &mdash; a direct financial and trust impact.</td>
+        <td>Treat payment as <b>asynchronous and idempotent</b>: attach a unique payment reference so retries cannot double-charge, configure a <b>dead-letter queue</b> for poison messages, and run a scheduled <b>reconciliation job</b> that compares local <code>Payment</code> records against clearing-house settlement reports. Persist payment intent locally before enqueueing.</td>
+      </tr>
+      <tr>
+        <td><b>Concurrency &amp; data integrity on bill state</b></td>
+        <td><span class="risk-tag sev-med">MEDIUM</span></td>
+        <td>Self-service load means the same bill may be acted on concurrently (e.g. a customer pays while an agent resolves a dispute), risking lost updates and invalid status transitions such as paying an already-disputed bill.</td>
+        <td>Use <b>optimistic locking</b> &mdash; the <code>@Version</code> column already present on <code>BaseEntity</code> &mdash; to detect concurrent edits, and enforce a <b>bill status state-machine</b> in the service layer so only legal transitions (e.g. OUTSTANDING&rarr;DISPUTED, DISPUTED&rarr;RESOLVED) are permitted. Wrap each use case in a single transaction.</td>
+      </tr>
+    </table>
+  </section>
+
+  <section id="assumptions">
+    <h2 class="sec"><span class="num">11</span>Assumptions</h2>
+    <p>The following assumptions had a material impact on the architecture and design decisions:</p>
+    <ul>
+      <li><b>Authentication &amp; identity</b> are provided by an existing corporate IAM / single sign-on facility; the self-service application consumes an authenticated customer identity rather than managing credentials itself.</li>
+      <li><b>Bill generation and discounting are owned by the external billing system.</b> Our <code>calculateBill</code> logic models the summation of usage line-items for design completeness, but the authoritative figures (including discounts and special charges) originate from the billing web service.</li>
+      <li><b>One operating market context per customer:</b> a customer&rsquo;s bills are denominated in a single currency and governed by one regulatory regime at a time, even though Utility International operates across North America and Europe.</li>
+      <li><b>The tariff-change capability</b> (changing electricity/gas/water packages) updates the customer&rsquo;s pricing for <em>future</em> billing periods; recalculation of issued bills remains the billing system&rsquo;s responsibility and is therefore out of scope for the SuD&rsquo;s core flows.</li>
+      <li><b>The push-notification provider is not yet selected.</b> The design reserves a message-driven <code>NotificationService</code> seam and stores a customer <code>mobileNumber</code>, but the concrete SMS/push integration is deferred to the future enhancement.</li>
+      <li><b>A relational database</b> is the system of record; the JPA mapping (single-table inheritance for bills) assumes an RDBMS with adequate support for the chosen Hibernate dialect.</li>
+      <li><b>Disputes are routed to an available agent</b> by an existing work-allocation mechanism; the design places the disputed bill into an agent workspace abstraction rather than implementing agent scheduling.</li>
+    </ul>
+  </section>
+
+  <section id="mapping">
+    <h2 class="sec"><span class="num">12</span>Implementation Notes &mdash; Technique Mapping</h2>
+    <p>The implementation demonstrates each required Java technique. The table maps every technique to the class or file where it is realised.</p>
+    <table class="grid">
+      <tr><th style="width:30%">Technique</th><th style="width:34%">Where it is realised</th><th style="width:36%">How</th></tr>
+      <tr><td><b>Data Transfer Object (DTO)</b></td><td><code>dto/BillDTO.java</code></td><td>Flat, serialisable carrier returned by the service so the web tier never sees JPA entities.</td></tr>
+      <tr><td><b>Data Access Object (DAO)</b></td><td><code>dao/GenericDao.java</code>, <code>BillDao.java</code>, <code>BillDaoImpl.java</code></td><td>Persistence encapsulated behind interfaces; <code>BillDaoImpl</code> wraps the JPA <code>EntityManager</code>.</td></tr>
+      <tr><td><b>Optional</b></td><td><code>GenericDao.findById</code>, <code>BillDao.findMostRecentOutstanding</code></td><td>Lookups return <code>Optional&lt;T&gt;</code>; the service consumes them with <code>map(...).orElseThrow(...)</code>.</td></tr>
+      <tr><td><b>Functional programming</b></td><td><code>dto/BillMapper.java</code>, <code>service/BillService.java</code></td><td><code>Function&lt;MonthlyBill,BillDTO&gt; TO_DTO</code> lambda, method references, and <code>reduce(ZERO, BigDecimal::add)</code>.</td></tr>
+      <tr><td><b>Dedicated enum package</b></td><td><code>entity/enums/</code> &mdash; <code>UtilityType</code>, <code>BillStatus</code>, <code>PaymentMethod</code></td><td>All domain enumerations grouped in one package, decoupled from the entities that use them.</td></tr>
+      <tr><td><b>@Enumerated(EnumType.STRING)</b></td><td><code>Resource</code>, <code>MonthlyBill</code>, <code>Payment</code></td><td>Enums persisted by name (readable column values) rather than brittle ordinals.</td></tr>
+      <tr><td><b>stream().map().collect(toList())</b></td><td><code>BillMapper.toDtoList(...)</code></td><td><code>bills.stream().map(BillMapper::toDto).collect(Collectors.toList())</code>.</td></tr>
+      <tr><td><b>@MappedSuperclass</b></td><td><code>entity/BaseEntity.java</code></td><td>Shares <code>id</code>, <code>@Version</code> and audit timestamps into every entity table without being an entity itself.</td></tr>
+    </table>
+    <div class="note">
+      <b>Note on inheritance strategy.</b> The design uses two distinct JPA inheritance mechanisms deliberately: <code>@MappedSuperclass</code> on <code>BaseEntity</code> (shared columns, not queryable), and single-table <code>@Inheritance</code> on <code>MonthlyBill</code> (a queryable hierarchy with a <code>bill_type</code> discriminator for Gas / Water / Electricity bills).
+    </div>
+  </section>
+
+  <footer class="end">
+    <span>Utility International &mdash; Architecture &amp; Design</span>
+    <span>SEN 304 &middot; Java EE / JPA</span>
+  </footer>
+
+</div>
+</body>
+</html>
